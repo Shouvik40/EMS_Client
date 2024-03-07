@@ -1,0 +1,73 @@
+.container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #fff;
+  border-radius: 8px;
+  height: 100vh;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.left-section {
+  padding: 20px;
+  border-right: 2px solid #ccc;
+
+  flex: 0.8;
+  color: black;
+}
+.left-section h2 {
+  text-align: center;
+}
+.left-section button {
+  background-color: black;
+}
+.left-section button:hover {
+  color: black;
+  background-color: grey;
+}
+.dropdown {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 15px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-sizing: border-box;
+}
+
+.right-section {
+  padding: 20px;
+  flex: 1.2;
+  text-align: center;
+}
+
+.line-divider {
+  height: 100%;
+  /* border-right: 2px solid #ccc;d */
+}
+
+.logo {
+  max-width: 100px;
+  max-height: 100px;
+}
+
+input[type="text"],
+input[type="password"],
+input[type="dropdown"],
+button {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 15px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-sizing: border-box;
+}
+
+button {
+  background-color: #007bff;
+  color: #fff;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #0056b3;
+}

@@ -1,0 +1,230 @@
+<div class="container">
+  <h2>Employee Management</h2>
+  <button class="btn btn-primary mb-3" (click)="openCreateModal()">
+    Create Employee
+  </button>
+  <input type="file" (change)="importCsv($event)" accept=".csv" />
+
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Employee ID</th>
+        <th>First Name</th>
+        <th>Last Name</th>
+        <th>Date of Birth</th>
+        <th>Date of Joining</th>
+        <th>Department ID</th>
+        <th>Grade</th>
+        <th>Designation</th>
+        <th>Basic Salary</th>
+        <th>Gender</th>
+        <th>Marital Status</th>
+        <th>Home Address</th>
+        <th>Contact Number</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let employee of employees">
+        <td>{{ employee.emp_ID }}</td>
+        <td>{{ employee.emp_First_Name }}</td>
+        <td>{{ employee.emp_Last_Name }}</td>
+        <td>{{ employee.emp_Date_of_Birth | date }}</td>
+        <td>{{ employee.emp_Date_of_Joining | date }}</td>
+        <td>{{ employee.emp_Dept_ID }}</td>
+        <td>{{ employee.emp_Grade }}</td>
+        <td>{{ employee.emp_Designation }}</td>
+        <td>{{ employee.emp_Basic }}</td>
+        <td>{{ employee.emp_Gender }}</td>
+        <td>{{ employee.emp_Marital_Status }}</td>
+        <td>{{ employee.emp_Home_Address }}</td>
+        <td>{{ employee.emp_Contact_Num }}</td>
+        <td>
+          <button
+            class="btn btn-primary btn-sm"
+            (click)="openEditModal(employee)"
+          >
+            Edit
+          </button>
+          <button
+            class="btn btn-danger btn-sm"
+            (click)="employee.emp_ID && deleteEmployee(employee.emp_ID)"
+          >
+            Delete
+          </button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<div
+  class="modal"
+  id="employeeModal"
+  tabindex="-1"
+  role="dialog"
+  *ngIf="showModal"
+>
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">{{ modalTitle }}</h5>
+        <button
+          type="button"
+          class="close"
+          data-dismiss="modal"
+          aria-label="Close"
+          (click)="closeModal()"
+        >
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form
+          [formGroup]="employeeForm"
+          (ngSubmit)="submitForm()"
+          class="form-outer"
+        >
+          <!-- Form fields for employee data -->
+          <div class="form-group">
+            <label for="emp_ID">Employee ID</label>
+            <input
+              type="text"
+              class="form-control"
+              id="emp_ID"
+              formControlName="emp_ID"
+              [readonly]="modalTitle === 'Edit Employee'"
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="emp_First_Name">First Name</label>
+            <input
+              type="text"
+              class="form-control"
+              id="emp_First_Name"
+              formControlName="emp_First_Name"
+              required
+            />
+          </div>
+          <div class="form-group">
+            <label for="emp_Last_Name">Last Name</label>
+            <input
+              type="text"
+              class="form-control"
+              id="emp_Last_Name"
+              formControlName="emp_Last_Name"
+              required
+            />
+          </div>
+          <div class="form-group">
+            <label for="emp_Date_of_Birth">Date of Birth</label>
+            <input
+              type="date"
+              class="form-control"
+              id="emp_Date_of_Birth"
+              formControlName="emp_Date_of_Birth"
+              required
+            />
+          </div>
+          <div class="form-group">
+            <label for="emp_Date_of_Joining">Date of Joining</label>
+            <input
+              type="date"
+              class="form-control"
+              id="emp_Date_of_Joining"
+              formControlName="emp_Date_of_Joining"
+              required
+            />
+          </div>
+          <div class="form-group">
+            <label for="emp_Dept_ID">Department ID</label>
+            <input
+              type="number"
+              class="form-control"
+              id="emp_Dept_ID"
+              formControlName="emp_Dept_ID"
+              required
+            />
+          </div>
+          <div class="form-group">
+            <label for="emp_Grade">Grade</label>
+            <input
+              type="text"
+              class="form-control"
+              id="emp_Grade"
+              formControlName="emp_Grade"
+              required
+            />
+          </div>
+          <div class="form-group">
+            <label for="emp_Designation">Designation</label>
+            <input
+              type="text"
+              class="form-control"
+              id="emp_Designation"
+              formControlName="emp_Designation"
+              required
+            />
+          </div>
+          <div class="form-group">
+            <label for="emp_Basic">Basic Salary</label>
+            <input
+              type="number"
+              class="form-control"
+              id="emp_Basic"
+              formControlName="emp_Basic"
+              required
+            />
+          </div>
+          <div class="form-group">
+            <label for="emp_Gender">Gender</label>
+            <select
+              class="form-control"
+              id="emp_Gender"
+              formControlName="emp_Gender"
+              required
+            >
+              <option value="M">Male</option>
+              <option value="F">Female</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="emp_Marital_Status">Marital Status</label>
+            <select
+              class="form-control"
+              id="emp_Marital_Status"
+              formControlName="emp_Marital_Status"
+              required
+            >
+              <option value="S">Single</option>
+              <option value="M">Married</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="emp_Home_Address">Home Address</label>
+            <input
+              type="text"
+              class="form-control"
+              id="emp_Home_Address"
+              formControlName="emp_Home_Address"
+              required
+            />
+          </div>
+          <div class="form-group">
+            <label for="emp_Contact_Num">Contact Number</label>
+            <input
+              type="text"
+              class="form-control"
+              id="emp_Contact_Num"
+              formControlName="emp_Contact_Num"
+              required
+            />
+          </div>
+
+          <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

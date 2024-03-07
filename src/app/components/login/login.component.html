@@ -1,0 +1,30 @@
+<div class="container">
+  <div class="left-section">
+    <h2>Login</h2>
+    <form>
+      <input
+        type="text"
+        placeholder="User Name"
+        [(ngModel)]="userName"
+        name="userId"
+        required
+      />
+      <input
+        type="password"
+        placeholder="Password"
+        [(ngModel)]="password"
+        name="password"
+        required
+      />
+      <select [(ngModel)]="userType" name="userType" class="dropdown">
+        <option value="NU">User</option>
+        <option value="SU">Admin</option>
+      </select>
+      <button type="button" (click)="submitFunction()">Login</button>
+    </form>
+  </div>
+  <div class="line-divider"></div>
+  <div class="right-section">
+    <img src="assets/your-company-logo.png" alt="Company Logo" class="logo" />
+  </div>
+</div>

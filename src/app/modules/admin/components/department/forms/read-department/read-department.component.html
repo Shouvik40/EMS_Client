@@ -1,0 +1,90 @@
+<div class="container" [ngClass]="{ 'blur-background': blurBackground }">
+  <h2>Departments</h2>
+  <button class="create-btn" (click)="openCreateModal()">
+    Create Department
+  </button>
+
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Department ID</th>
+        <th>Department Name</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let department of departments">
+        <td>{{ department.dept_ID }}</td>
+        <td>{{ department.dept_Name }}</td>
+        <td>
+          <button
+            class="btn btn-primary btn-sm"
+            (click)="openEditModal(department)"
+          >
+            Edit
+          </button>
+          <button
+            class="btn btn-danger btn-sm"
+            (click)="department.dept_ID && deleteDepartment(department.dept_ID)"
+          >
+            Delete
+          </button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- Create/Edit Department Modal -->
+<div
+  class="modal"
+  id="departmentModal"
+  tabindex="-1"
+  role="dialog"
+  *ngIf="showModal"
+>
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">{{ modalTitle }}</h5>
+        <button
+          type="button"
+          class="close"
+          data-dismiss="modal"
+          aria-label="Close"
+          (click)="closeModal()"
+        >
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form
+          [formGroup]="departmentForm"
+          (ngSubmit)="submitForm()"
+          class="form-outer"
+        >
+          <div class="form-group" *ngIf="modalTitle !== 'Create Department'">
+            <label for="dept_ID">Department ID:</label>
+            <input
+              type="text"
+              class="form-control"
+              id="dept_ID"
+              formControlName="dept_ID"
+              [readonly]="modalTitle === 'Edit Department'"
+            />
+          </div>
+          <div class="form-group">
+            <label for="dept_Name">Department Name:</label>
+            <input
+              type="text"
+              class="form-control"
+              id="dept_Name"
+              formControlName="dept_Name"
+            />
+          </div>
+          <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
