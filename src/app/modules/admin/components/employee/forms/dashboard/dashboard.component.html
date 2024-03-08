@@ -1,5 +1,12 @@
 <div class="container">
   <h2>Employee Management</h2>
+  <input
+    type="text"
+    class="form-control mb-3"
+    [(ngModel)]="filterText"
+    placeholder="Search for an employee"
+  />
+
   <button class="btn btn-primary mb-3" (click)="openCreateModal()">
     Create Employee
   </button>
@@ -25,7 +32,8 @@
       </tr>
     </thead>
     <tbody>
-      <tr *ngFor="let employee of employees">
+      <tr *ngFor="let employee of filteredEmployees">
+        <!-- Table cell content -->
         <td>{{ employee.emp_ID }}</td>
         <td>{{ employee.emp_First_Name }}</td>
         <td>{{ employee.emp_Last_Name }}</td>

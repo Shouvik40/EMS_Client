@@ -17,6 +17,9 @@ export class EmployeeService {
   createEmployee(employee: Employee): Observable<Employee> {
     return this.http.post<Employee>(`${this.baseUrl}/Employee`, employee);
   }
+  createEmployeeCSV(employee: Employee): Observable<Employee> {
+    return this.http.post<Employee>(`${this.baseUrl}/Employee`, employee);
+  }
 
   updateEmployee(employee: Employee): Observable<Employee> {
     return this.http.put<Employee>(`${this.baseUrl}/Employee/`, employee);

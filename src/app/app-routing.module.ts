@@ -1,7 +1,6 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
-import { NormaluserModule } from './normaluser/normaluser.module';
 import { AuthGuard } from '../guards/auth.guard';
 
 import { LoginComponent } from './components/login/login.component';
@@ -19,7 +18,7 @@ const routes: Routes = [
   },
   {
     path: 'admin',
-    // canActivate: [AuthGuard],  // if true tan admin else login
+    canActivate: [AuthGuard], // if true tan admin else login
     loadChildren: () =>
       import('./modules/admin/admin.module').then((m) => m.AdminModule),
   },

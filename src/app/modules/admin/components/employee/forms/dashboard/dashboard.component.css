@@ -138,3 +138,7 @@ label {
 .blur-background {
   filter: blur(5px); /* Adjust the blur amount as needed */
 }
+.highlight {
+  background-color: blue;
+  color: white; /* Adjust text color as needed */
+}

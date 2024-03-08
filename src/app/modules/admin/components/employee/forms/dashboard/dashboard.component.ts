@@ -16,11 +16,21 @@ export class DashboardComponent {
   employeeForm: FormGroup;
   selectedEmployee: Employee = {};
   blurBackground: boolean = false;
-
+  _filterText: string = '';
+  filteredEmployees: Employee[];
+  // searchQuery: string = '';
+  get filterText() {
+    return this._filterText;
+  }
+  set filterText(value: string) {
+    this._filterText = value;
+    this.filteredEmployees = this.filterEmployees(value);
+  }
   constructor(
     private employeeService: EmployeeService,
     private formBuilder: FormBuilder
   ) {
+    this.filteredEmployees = [];
     this.employeeForm = this.formBuilder.group({
       emp_ID: [''],
       emp_First_Name: ['', Validators.required],
@@ -49,6 +59,7 @@ export class DashboardComponent {
     this.employeeService.getEmployees().subscribe(
       (employees: Employee[]) => {
         this.employees = employees;
+        this.filteredEmployees = employees;
       },
       (error) => {
         console.error('Error fetching employees:', error);
@@ -56,6 +67,7 @@ export class DashboardComponent {
       }
     );
   }
+
   showModal: boolean = false;
   openCreateModal(): void {
     this.modalTitle = 'Create Employee';
@@ -104,7 +116,8 @@ export class DashboardComponent {
 
   createEmployee(): void {
     const newEmployee: Employee = this.employeeForm.value;
-    console.log(newEmployee.emp_Date_of_Joining, newEmployee.emp_Date_of_Birth);
+
+    // console.log(newEmployee.emp_Date_of_Joining, newEmployee.emp_Date_of_Birth);
     this.employeeService.createEmployee(newEmployee).subscribe(
       (createdEmployee: Employee) => {
         this.employees.push(createdEmployee);
@@ -118,7 +131,7 @@ export class DashboardComponent {
 
   updateEmployee(): void {
     const updatedEmployee: Employee = this.employeeForm.value;
-    console.log(updatedEmployee);
+    // console.log(updatedEmployee);
     this.employeeService.updateEmployee(updatedEmployee).subscribe(
       (updatedEmp: Employee) => {
         const index = this.employees.findIndex(
@@ -164,15 +177,16 @@ export class DashboardComponent {
       }
     );
   }
-  importCsv(event: any): void {
+  async importCsv(event: any): Promise<void> {
     const file = event.target.files[0];
     if (file) {
       const reader = new FileReader();
       reader.readAsText(file);
-      reader.onload = () => {
+      reader.onload = async () => {
         const csvData: string = reader.result as string;
-        const employees: Employee[] = this.parseCsvData(csvData);
-        this.createEmployeesFromCsv(employees);
+        const employeesData: Employee[] = this.parseCsvData(csvData);
+
+        await this.createEmployeesFromCsv(employeesData);
       };
       reader.onerror = (error) => {
         console.error('Error reading CSV file:', error);
@@ -183,47 +197,101 @@ export class DashboardComponent {
   parseCsvData(csvData: string): Employee[] {
     const lines: string[] = csvData.split('\n');
     const employees: Employee[] = [];
-    for (let line of lines) {
-      const parts: string[] = line.split(',');
-      const employee: Employee = {
-        // Assuming CSV format: emp_ID,emp_First_Name,emp_Last_Name,...
-        emp_ID: parts[0].trim(),
-        emp_First_Name: parts[1].trim(),
-        emp_Last_Name: parts[2].trim(),
-        // Add more properties as needed
-      };
-      employees.push(employee);
+
+    for (let i = 1; i < lines.length; i++) {
+      const values: string[] = lines[i].split(',');
+      // console.log('Values:', values); // Add this line to check the structure of the values array
+
+      // Add a check to ensure values array has enough elements
+      if (values.length >= 13) {
+        const employee: Employee = {
+          emp_ID: values[0].trim(),
+          emp_First_Name: values[1].trim(),
+          emp_Last_Name: values[2].trim(),
+          emp_Date_of_Birth: new Date(values[3].trim()),
+          emp_Date_of_Joining: new Date(values[4].trim()),
+          emp_Dept_ID: parseInt(values[5].trim(), 10),
+          emp_Grade: values[6].trim(),
+          emp_Designation: values[7].trim(),
+          emp_Basic: parseFloat(values[8].trim()),
+          emp_Gender: values[9].trim(),
+          emp_Marital_Status: values[10].trim(),
+          emp_Home_Address: values[11].trim(),
+          emp_Contact_Num: values[12].trim(),
+        };
+
+        employees.push(employee);
+      } else {
+        console.error('Invalid data format in line:', lines[i]);
+        // Handle the error or skip this line
+      }
     }
+    // console.log(employees);
     return employees;
   }
-  createEmployeesFromCsv(employees: Employee[]): void {
+
+  async createEmployeesFromCsv(employees: Employee[]): Promise<void> {
     const failedEmployees: Employee[] = [];
     const successfulEmployees: Employee[] = [];
     let counter = 0;
+
     for (let employee of employees) {
-      this.employeeService.createEmployee(employee).subscribe(
-        (createdEmployee: Employee) => {
+      try {
+        const createdEmployee: Employee | undefined = await this.employeeService
+          .createEmployeeCSV(employee)
+          .toPromise();
+        if (createdEmployee) {
           successfulEmployees.push(createdEmployee);
-        },
-        (error) => {
-          console.error('Error creating employee:', error);
+        } else {
+          // Handle the case where createdEmployee is undefined
+          console.error(
+            'Error creating employee: Created employee is undefined'
+          );
           failedEmployees.push(employee);
-        },
-        () => {
-          counter++;
-          if (counter === employees.length) {
-            if (failedEmployees.length > 0) {
-              console.warn(
-                'Failed to create the following employees:',
-                failedEmployees
-              );
-              // Handle failed employees appropriately
-            }
-            // Clear the array of failed employees
-            failedEmployees.splice(0, failedEmployees.length);
-            // Optionally, do something with successful employees
-          }
         }
+      } catch (error) {
+        console.error('Error creating employee:', error);
+        failedEmployees.push(employee);
+      } finally {
+        counter++;
+        if (counter === employees.length) {
+          if (failedEmployees.length > 0) {
+            console.warn(
+              'Failed to create the following employees:',
+              failedEmployees
+            );
+            // Handle failed employees appropriately
+          }
+          // Clear the array of failed employees
+          failedEmployees.splice(0, failedEmployees.length);
+          // Optionally, do something with successful employees
+        }
+      }
+    }
+  }
+  createEmployeeCSV(value: Employee): void {
+    console.log(value);
+    this.employeeService.createEmployee(value).subscribe(
+      (createdEmployee: Employee) => {
+        this.employees.push(createdEmployee);
+        this.closeModal();
+      },
+      (error) => {
+        console.error('Error creating employee:', error);
+      }
+    );
+  }
+
+  filterEmployees(filterTerm: string) {
+    if (this.employees.length === 0 || filterTerm === '') {
+      return this.employees;
+    } else {
+      const searchTerm = filterTerm.toLowerCase();
+      return this.filteredEmployees.filter((employee) =>
+        Object.values(employee).some(
+          (value) =>
+            value && value.toString().toLowerCase().includes(searchTerm)
+        )
       );
     }
   }

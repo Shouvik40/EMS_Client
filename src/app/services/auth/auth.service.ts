@@ -1,39 +1,19 @@
-// // auth.service.ts
-
-// import { Injectable } from '@angular/core';
-
-// @Injectable({
-//   providedIn: 'root',
-// })
-// export class AuthService {
-//   private isAuthenticated: boolean = false;
-
-//   // Method to check if the user is authenticated
-//   isLoggedIn(): boolean {
-//     return this.isAuthenticated;
-//   }
-
-//   // Method to simulate user login
-//   login() {
-//     this.isAuthenticated = true;
-//   }
-
-//   // Method to simulate user logout
-//   logout() {
-//     this.isAuthenticated = false;
-//   }
-// }
-
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { Router } from '@angular/router';
+
+import { LocalStorageService } from '../storage/local-storage.service';
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
-  constructor(private router: Router, private http: HttpClient) {}
+  constructor(
+    private router: Router,
+    private http: HttpClient,
+    private localStorageService: LocalStorageService
+  ) {}
 
   login(userData: any) {
     console.log(userData); // For debugging
@@ -45,7 +25,10 @@ export class AuthService {
       .pipe(
         map((response) => {
           // Assuming the response contains user data including userType
-          localStorage.setItem('currentUser', JSON.stringify(response));
+          this.localStorageService.setItem(
+            'currentUser',
+            JSON.stringify(response)
+          );
           return response;
         }),
         catchError((error) => {
@@ -58,11 +41,11 @@ export class AuthService {
   logout() {
     // Perform logout logic here (e.g., clear session storage, navigate to login page)
     // For example, clear any stored user data and navigate to the login page
-    localStorage.removeItem('currentUser');
+    this.localStorageService.removeItem('currentUser');
   }
 
   getCurrentUser(): any {
     // Retrieve user from local storage
-    return JSON.parse(localStorage.getItem('currentUser') || '{}');
+    return JSON.parse(this.localStorageService.getItem('currentUser') || '{}');
   }
 }
